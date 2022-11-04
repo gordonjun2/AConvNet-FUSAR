@@ -3,9 +3,11 @@
 ### Target Classification Using the Deep Convolutional Networks for SAR Images
 
 This repository is reproduced-implementation of AConvNet which recognize target from MSTAR dataset.
-You can see the official implementation of the author at [MSTAR-AConvNet](https://github.com/fudanxu/MSTAR-AConvNet).
+You can see the official implementation of the author at [MSTAR-AConvNet](https://github.com/fudanxu/MSTAR-AConvNet). For the PyTorch version, refer to [AConvNet-pytorch](https://github.com/jangsoopark/AConvNet-pytorch).
 
 ## Dataset
+
+This repository uses AConvNet on [FUSAR-Ship Dataset version 1.0](https://emwlab.fudan.edu.cn/resources/) dataset. For MSTAR dataset usage, refer to the original repository [here](https://github.com/jangsoopark/AConvNet-pytorch).
 
 ### MSTAR (Moving and Stationary Target Acquisition and Recognition) Database
 

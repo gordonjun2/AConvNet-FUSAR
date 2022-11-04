@@ -14,13 +14,13 @@ project_root = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(_
 
 class Dataset(torch.utils.data.Dataset):
 
-    def __init__(self, path, name='soc', is_train=False, transform=None):
+    def __init__(self, path, name='fusar', is_train=False, transform=None):
         self.is_train = is_train
         self.name = name
 
         self.images = []
         self.labels = []
-        self.serial_number = []
+        # self.serial_number = []
 
         self.transform = transform
         self._load_data(path)
@@ -34,15 +34,16 @@ class Dataset(torch.utils.data.Dataset):
 
         _image = self.images[idx]
         _label = self.labels[idx]
-        _serial_number = self.serial_number[idx]
+        # _serial_number = self.serial_number[idx]
 
         if self.transform:
             _image = self.transform(_image)
 
-        return _image, _label, _serial_number
+        # return _image, _label, _serial_number
+        return _image, _label
 
     def _load_data(self, path):
-        mode = 'train' if self.is_train else 'test'
+        mode = 'train' if self.is_train else 'val'
 
         image_list = glob.glob(os.path.join(project_root, path, f'{self.name}/{mode}/*/*.npy'))
         label_list = glob.glob(os.path.join(project_root, path, f'{self.name}/{mode}/*/*.json'))
@@ -50,10 +51,14 @@ class Dataset(torch.utils.data.Dataset):
         label_list = sorted(label_list, key=os.path.basename)
 
         for image_path, label_path in tqdm.tqdm(zip(image_list, label_list), desc=f'load {mode} data set'):
-            self.images.append(np.load(image_path))
+            try:
+                self.images.append(np.load(image_path))
+            except:
+                print('Found bad data, skipped...')
+                continue
 
             with open(label_path, mode='r', encoding='utf-8') as f:
                 _label = json.load(f)
 
             self.labels.append(_label['class_id'])
-            self.serial_number.append(_label['serial_number'])
+            # self.serial_number.append(_label['serial_number'])

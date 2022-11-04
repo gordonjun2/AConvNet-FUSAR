@@ -7,7 +7,7 @@ class Model(object):
     def __init__(self, **params):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net = model.network.Network(
-            classes=params.get('classes', 10),
+            classes=params.get('classes', 3),
             channels=params.get('channels', 1),
             dropout_rate=params.get('dropout_rate', 0.5)
         )

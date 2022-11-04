@@ -300,10 +300,13 @@ dataset/confuser-rejection/raw/test/
 dataset/confuser-rejection/train/
 dataset/confuser-rejection/test/
 
+dataset/fusar/
+
 experiments/history
 
 *.pth
 *.zip
+*.tiff
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,pycharm+all,python
 
 

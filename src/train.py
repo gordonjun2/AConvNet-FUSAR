@@ -19,8 +19,10 @@ from data import loader
 from utils import common
 import model
 
+from matplotlib import pyplot as plt
+
 flags.DEFINE_string('experiments_path', os.path.join(common.project_root, 'experiments'), help='')
-flags.DEFINE_string('config_name', 'config/AConvNet-SOC.json', help='')
+flags.DEFINE_string('config_name', 'config/AConvNet-FUSAR.json', help='')
 FLAGS = flags.FLAGS
 
 
@@ -50,7 +52,7 @@ def validation(m, ds):
     m.net.eval()
     _softmax = torch.nn.Softmax(dim=1)
     for i, data in enumerate(tqdm(ds)):
-        images, labels, _ = data
+        images, labels = data
 
         predictions = m.inference(images)
         predictions = _softmax(predictions)
@@ -77,6 +79,13 @@ def run(epochs, dataset, classes, channels, batch_size,
     )
 
     model_path = os.path.join(experiments_path, f'model/{model_name}')
+
+    try:
+        print('Loading pretrained model...')
+        m.load(os.path.join(model_path, 'model-100.pth'))
+    except:
+        print('Pretrained model not found...')
+
     if not os.path.exists(model_path):
         os.makedirs(model_path, exist_ok=True)
 
@@ -94,7 +103,10 @@ def run(epochs, dataset, classes, channels, batch_size,
 
         m.net.train()
         for i, data in enumerate(tqdm(train_set)):
-            images, labels, _ = data
+            images, labels = data
+            # print(labels[0])
+            # plt.imshow(images[0].permute(1, 2, 0))
+            # plt.show()
             _loss.append(m.optimize(images, labels))
 
         if m.lr_scheduler:
