@@ -55,7 +55,7 @@ if not os.path.isdir(output_root):
 # Declare an augmentation pipeline
 
 transform = A.Compose([
-    A.ShiftScaleRotate(shift_limit=0.0, scale_limit=0.2, rotate_limit=180, p=0.5),
+    A.Rotate(limit=180, p=0.5),
     A.Flip(p=0.5),
     A.RandomBrightnessContrast(brightness_limit=0.1, contrast_limit=0.1, p=0.5),
     A.Sharpen(alpha=(0.2, 0.5), lightness=(0.5, 1.0), p=0.5)
@@ -80,7 +80,7 @@ for target in fusar.target_name['fusar']:
         # width = int(image.shape[1] * scale_percent / 100)
         # height = int(image.shape[0] * scale_percent / 100)
 
-        dim = (100, 100)
+        dim = (128, 128)
         resized_image = cv2.resize(image, dim)
 
         output_sub_folder = output_root + "/" + target + "/"

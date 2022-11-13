@@ -65,6 +65,20 @@ def validation(m, ds):
     accuracy = 100 * corrects / num_data
     return accuracy
 
+# def inference(m, file):
+
+#     m.net.eval()
+#     _softmax = torch.nn.Softmax(dim=1)
+
+
+
+#     predictions = m.inference(image)
+#     predictions = _softmax(predictions)
+#     _, predictions = torch.max(predictions.data, 1)
+#     label = label.type(torch.LongTensor)
+
+#     return accuracy
+
 
 def run(epochs, dataset, classes, channels, batch_size,
         lr, lr_step, lr_decay, weight_decay, dropout_rate,
@@ -84,52 +98,7 @@ def run(epochs, dataset, classes, channels, batch_size,
         print('Pretrained model loaded...')
     except:
         print('Pretrained model not found...')
-
-    if not os.path.exists(model_path):
-        os.makedirs(model_path, exist_ok=True)
-
-    history_path = os.path.join(experiments_path, 'history')
-    if not os.path.exists(history_path):
-        os.makedirs(history_path, exist_ok=True)
-
-    history = {
-        'loss': [],
-        'accuracy': []
-    }
-
-    train_set = load_dataset('dataset', True, dataset, batch_size)
-    valid_set = load_dataset('dataset', False, dataset, batch_size)
-
-    for epoch in range(epochs):
-        _loss = []
-
-        m.net.train()
-        for i, data in enumerate(tqdm(train_set)):
-            images, labels = data
-            # print(labels[0])
-            # plt.imshow(images[0].permute(1, 2, 0))
-            # plt.show()
-            _loss.append(m.optimize(images, labels))
-
-        if m.lr_scheduler:
-            lr = m.lr_scheduler.get_last_lr()[0]
-            m.lr_scheduler.step()
-
-        accuracy = validation(m, valid_set)
-
-        logging.info(
-            f'Epoch: {epoch + 1:03d}/{epochs:03d} | loss={np.mean(_loss):.4f} | lr={lr} | accuracy={accuracy:.2f}'
-        )
-
-        history['loss'].append(np.mean(_loss))
-        history['accuracy'].append(accuracy)
-
-        if experiments_path:
-            m.save(os.path.join(model_path, f'model-{epoch + 1:03d}.pth'))
-
-    with open(os.path.join(history_path, f'history-{model_name}.json'), mode='w', encoding='utf-8') as f:
-        json.dump(history, f, ensure_ascii=True, indent=2)
-
+        return
 
 def main(_):
     logging.info('Start')
@@ -152,6 +121,8 @@ def main(_):
     dropout_rate = config['dropout_rate']
 
     model_name = config['model_name']
+
+    image_path = ''
 
     run(epochs, dataset, classes, channels, batch_size,
         lr, lr_step, lr_decay, weight_decay, dropout_rate,

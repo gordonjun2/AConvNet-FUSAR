@@ -9,7 +9,7 @@ class Network(nn.Module):
     def __init__(self, **params):
         super(Network, self).__init__()
         self.dropout_rate = params.get('dropout_rate', 0.5)
-        self.classes = params.get('classes', 3)
+        self.classes = params.get('classes', 4)
         self.channels = params.get('channels', 1)
 
         _w_init = params.get('w_init', lambda x: nn.init.kaiming_normal_(x, nonlinearity='relu'))

@@ -14,9 +14,9 @@ import fusar
 
 flags.DEFINE_string('image_root', default='dataset', help='')
 flags.DEFINE_string('dataset', default='fusar', help='')
-flags.DEFINE_boolean('is_train', default=False, help='')
-flags.DEFINE_integer('chip_size', default=94, help='')
-flags.DEFINE_integer('patch_size', default=88, help='')
+flags.DEFINE_boolean('is_train', default=True, help='')
+flags.DEFINE_integer('chip_size', default=100, help='')              # If training, use 100. If testing, use 128.
+flags.DEFINE_integer('patch_size', default=94, help='')             # If training, use 94. If testing, use 128.
 flags.DEFINE_boolean('use_phase', default=False, help='')
 
 FLAGS = flags.FLAGS
@@ -41,7 +41,7 @@ def generate(src_path, dst_path, is_train, chip_size, patch_size, use_phase, dat
     print(f'Target Name: {os.path.basename(dst_path)}')
 
     _fusar = fusar.FUSAR(
-        name=dataset, is_train=is_train, chip_size=chip_size, patch_size=patch_size, use_phase=use_phase, stride=2
+        name=dataset, is_train=is_train, chip_size=chip_size, patch_size=patch_size, use_phase=use_phase, stride=1
     )
 
     image_list = glob.glob(os.path.join(src_path, '*'))

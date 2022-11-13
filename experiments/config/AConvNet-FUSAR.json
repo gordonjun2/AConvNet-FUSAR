@@ -1,9 +1,9 @@
 {
   "model_name": "AConvNet-FUSAR",
   "dataset": "fusar",
-  "num_classes": 3,
+  "num_classes": 4,
   "channels": 1,
-  "batch_size": 8,
+  "batch_size": 4,
   "epochs": 100,
   "momentum": 0.9,
   "lr": 1e-3,

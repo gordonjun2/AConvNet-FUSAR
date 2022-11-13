@@ -12,7 +12,7 @@ import cv2
 # target_name_fusar = ('Cargo', 'DiveVessel', 'Dredger', 'Fishing', 'HighSpeedCraft', 'LawEnforce', 'Other', 
 #                      'Passenger', 'PortTender', 'Reserved', 'SAR', 'Tanker', 'Tug', 'Unspecified', 'WingInGrnd')
 
-target_name_fusar = ('Cargo', 'Fishing', 'Tanker')
+target_name_fusar = ('BulkCarrier', 'Dredger', 'Fishing', 'Tanker')
 
 target_name = {
     'fusar': target_name_fusar
@@ -40,15 +40,16 @@ target_name = {
 # }
 
 serial_number = {
-    'Cargo': 0,
-    'Fishing': 1,
-    'Tanker': 2
+    'BulkCarrier': 0, 
+    'Dredger': 1,
+    'Fishing': 2,
+    'Tanker': 3
 }
 
 
 class FUSAR(object):
 
-    def __init__(self, name='fusar', is_train=False, use_phase=False, chip_size=94, patch_size=88, stride=40):
+    def __init__(self, name='fusar', is_train=False, use_phase=False, chip_size=100, patch_size=94, stride=1):
         self.name = name
         self.is_train = is_train
         self.use_phase = use_phase
@@ -81,7 +82,7 @@ class FUSAR(object):
         return meta_label, _data
 
     @staticmethod
-    def _center_crop(data, size=88):
+    def _center_crop(data, size=94):
         h, w, _ = data.shape
 
         y = (h - size) // 2
@@ -89,7 +90,7 @@ class FUSAR(object):
 
         return data[y: y + size, x: x + size]
 
-    def _data_augmentation(self, data, patch_size=88, stride=40):
+    def _data_augmentation(self, data, patch_size=94, stride=1):
         # patch extraction
         _data = FUSAR._center_crop(data, size=self.chip_size)
         _, _, channels = _data.shape
