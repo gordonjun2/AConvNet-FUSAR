@@ -1,135 +1,88 @@
-from absl import logging
-from absl import flags
-from absl import app
-
-from tqdm import tqdm
-
-from torch.utils import tensorboard
-
-import torchvision
-import torch
+import matplotlib.pyplot as plt
 
 import numpy as np
 
 import json
+import glob
+import sys
 import os
 
+from tqdm import tqdm
+import torchvision
+import torch
+
+from utils import common
 from data import preprocess
 from data import loader
-from utils import common
 import model
 
-from matplotlib import pyplot as plt
+from sklearn import metrics
+from data import fusar
 
-flags.DEFINE_string('experiments_path', os.path.join(common.project_root, 'experiments'), help='')
-flags.DEFINE_string('config_name', 'config/AConvNet-FUSAR.json', help='')
-FLAGS = flags.FLAGS
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+import cv2
 
-common.set_random_seed(12321)
+def center_crop(data, size=88):
+    h, w, _ = data.shape
 
+    y = (h - size) // 2
+    x = (w - size) // 2
 
-def load_dataset(path, is_train, name, batch_size):
-    transform = [preprocess.CenterCrop(88), torchvision.transforms.ToTensor()]
-    if is_train:
-        transform = [preprocess.RandomCrop(88), torchvision.transforms.ToTensor()]
-    _dataset = loader.Dataset(
-        path, name=name, is_train=is_train,
-        transform=torchvision.transforms.Compose(transform)
-    )
-    data_loader = torch.utils.data.DataLoader(
-        _dataset, batch_size=batch_size, shuffle=is_train, num_workers=1
-    )
-    return data_loader
+    return data[y: y + size, x: x + size]
 
+def infer(_m, image):
 
-@torch.no_grad()
-def validation(m, ds):
-    num_data = 0
-    corrects = 0
-
-    # Test loop
-    m.net.eval()
+    _m.net.eval()
     _softmax = torch.nn.Softmax(dim=1)
-    for i, data in enumerate(tqdm(ds)):
-        images, labels = data
 
-        predictions = m.inference(images)
-        predictions = _softmax(predictions)
+    prediction = _m.inference(image)
+    prediction = _softmax(prediction)
 
-        _, predictions = torch.max(predictions.data, 1)
-        labels = labels.type(torch.LongTensor)
-        num_data += labels.size(0)
-        corrects += (predictions == labels.to(m.device)).sum().item()
+    pred_acc, pred_label = torch.max(prediction.data, 1)
 
-    accuracy = 100 * corrects / num_data
-    return accuracy
+    return pred_acc.cpu().tolist()[0], pred_label.cpu().tolist()[0]
 
-# def inference(m, file):
+config = common.load_config(os.path.join(common.project_root, 'experiments/config/AConvNet-FUSAR.json'))
+model_name = config['model_name']
 
-#     m.net.eval()
-#     _softmax = torch.nn.Softmax(dim=1)
+_fusar = fusar.FUSAR(
+    name='fusar', is_train=False, chip_size=128, patch_size=128, use_phase=False, stride=1
+)
 
+# Load in image and label here
 
+image_path = os.path.join(common.project_root, 'dataset\\fusar\\sample\\Fishing\\bulkcarrier_and_fishing_combined_2.jpg')
 
-#     predictions = m.inference(image)
-#     predictions = _softmax(predictions)
-#     _, predictions = torch.max(predictions.data, 1)
-#     label = label.type(torch.LongTensor)
+# Read in the image
+label_dict, image = _fusar.read_inference(image_path)
 
-#     return accuracy
+# Display image
+plt.imshow(np.squeeze(image[0], axis=(2,)), interpolation='nearest')
+plt.show()
 
+gt_label = label_dict['class_id']
+gt_label_name = label_dict['target_type']
 
-def run(epochs, dataset, classes, channels, batch_size,
-        lr, lr_step, lr_decay, weight_decay, dropout_rate,
-        model_name, experiments_path=None):
+image = center_crop(image[0])
 
-    m = model.Model(
-        classes=classes, dropout_rate=dropout_rate, channels=channels,
-        lr=lr, lr_step=lr_step, lr_decay=lr_decay,
-        weight_decay=weight_decay
-    )
+image_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+image = image_transform(image)
+image = image[None, :, :, :]
 
-    model_path = os.path.join(experiments_path, f'model/{model_name}')
+m = model.Model(
+    classes=config['num_classes'], channels=config['channels'],
+)
 
-    try:
-        print('Loading pretrained model...')
-        m.load(os.path.join(model_path, 'old', 'model-061.pth'))
-        print('Pretrained model loaded...')
-    except:
-        print('Pretrained model not found...')
-        return
+model_path = os.path.join(common.project_root, f'experiments/model/{model_name}/old/model-061.pth')
 
-def main(_):
-    logging.info('Start')
-    experiments_path = FLAGS.experiments_path
-    config_name = FLAGS.config_name
+m.load(model_path)
+pred_acc, pred_label = infer(m, image)
 
-    config = common.load_config(os.path.join(experiments_path, config_name))
+print('-RESULT-\n')
+print('Ground Truth Label: ' + gt_label_name + ' (' + str(gt_label) + ')')
 
-    dataset = config['dataset']
-    classes = config['num_classes']
-    channels = config['channels']
-    epochs = config['epochs']
-    batch_size = config['batch_size']
-
-    lr = config['lr']
-    lr_step = config['lr_step']
-    lr_decay = config['lr_decay']
-
-    weight_decay = config['weight_decay']
-    dropout_rate = config['dropout_rate']
-
-    model_name = config['model_name']
-
-    image_path = ''
-
-    run(epochs, dataset, classes, channels, batch_size,
-        lr, lr_step, lr_decay, weight_decay, dropout_rate,
-        model_name, experiments_path)
-
-    logging.info('Finish')
-
-
-if __name__ == '__main__':
-    app.run(main)
+pred_label_name = fusar.serial_number_inv_map[pred_label]
+print('Predicted Label: ' + pred_label_name + ' (' + str(pred_label) + ')')
+print('Predicted Accuracy: ' + str(pred_acc))

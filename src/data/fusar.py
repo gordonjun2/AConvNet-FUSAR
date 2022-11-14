@@ -46,6 +46,7 @@ serial_number = {
     'Tanker': 3
 }
 
+serial_number_inv_map = {v: k for k, v in serial_number.items()}
 
 class FUSAR(object):
 
@@ -69,7 +70,35 @@ class FUSAR(object):
         # if not self.use_phase:
         #     _data = np.expand_dims(_data[:, :, 0], axis=2)
 
-        _data = self._normalize(_data)
+        # _data = self._normalize(_data)                # do not need to normalise now as torchvision.transforms.ToTensor() will normalise later
+
+        # _data = self._center_crop(_data)
+
+        if self.is_train:
+            _data = self._data_augmentation(_data, patch_size=self.patch_size, stride=self.stride)
+        else:
+            _data = [self._center_crop(_data, size=self.patch_size)]
+
+        meta_label = self._extract_meta_label(path)
+        return meta_label, _data
+
+    def read_inference(self, path):
+
+        _data = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+
+        dim = (128, 128)
+        _data = cv2.resize(_data, dim)
+
+        h = _data.shape[0]
+        w = _data.shape[1]
+
+        _data = _data.reshape(-1, h, w)
+        _data = _data.transpose(1, 2, 0)
+        _data = _data.astype(np.float32)
+        # if not self.use_phase:
+        #     _data = np.expand_dims(_data[:, :, 0], axis=2)
+
+        _data = self._normalize(_data)                # do not need to normalise now as torchvision.transforms.ToTensor() will normalise later
 
         # _data = self._center_crop(_data)
 
