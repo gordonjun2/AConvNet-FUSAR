@@ -42,7 +42,9 @@ AConvNet-FUSAR/
 
 To train, 
 - Perform data augmentation first by running
-```python src/data/fusar_data_augmentation.py```
+```
+python src/data/fusar_data_augmentation.py
+```
 
 - Generate .npy data for training
 ```
@@ -51,13 +53,19 @@ python generate_dataset.py --is_train=False --chip_size=128 --patch_size=128
 ```
 
 - Start the training
-```python src/train.py --config_name=config/AConvNet-FUSAR.json```.
+```
+python src/train.py --config_name=config/AConvNet-FUSAR.json
+```
 
 *evaluate_fusar.py* does part of what is to be done in *notebook/experiments-SOC.ipynb*. For the ease of use, run
-```python src/evaluate_fusar.py```.
+```
+python src/evaluate_fusar.py
+```
 
 An inference script is also created for the trained model. To infer on an image, edit the sample image path in the script and run
-```python src/inference_fusar.py```.
+```
+python src/inference_fusar.py
+```
 
 # AConvNet
 
