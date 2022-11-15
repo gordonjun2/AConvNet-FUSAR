@@ -53,7 +53,7 @@ _fusar = fusar.FUSAR(
 
 # Load in image and label here
 
-image_path = os.path.join(common.project_root, 'dataset\\fusar\\sample\\Fishing\\bulkcarrier_and_fishing_combined_2.jpg')
+image_path = os.path.join(common.project_root, 'dataset\\fusar\\sample\\Fishing\\bulkcarrier_and_fishing_combined_decreased_power_0.5_pattern_1.jpg')
 
 # Read in the image
 label_dict, image = _fusar.read_inference(image_path)
