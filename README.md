@@ -1,13 +1,60 @@
+## NOTE by Gordon
+
+### Dataset
+
+This repository uses AConvNet on [FUSAR-Ship Dataset version 1.0](https://emwlab.fudan.edu.cn/resources/) dataset. For MSTAR dataset usage, refer to the original repository [here](https://github.com/jangsoopark/AConvNet-pytorch).
+
+Due to the difficulty of the FUSAR dataset, only 4 classes are being used in the training, namely 'BulkCarrier', 'Dredger', 'Fishing', and 'Tanker'. Thus, rearranging the dataset from the initial source provided above is necessary.
+
+The FUSAR dataset should be rearranged and placed in:
+
+```
+AConvNet-FUSAR/
+    dataset/
+        confuser-rejection/
+            ...
+        eoc-1-t72-132/
+            ...
+        eoc-1-t72-a64/
+            ...
+        eoc-2-cv/
+            ...
+        eoc-2-vv/
+            ...
+        fusar/
+            raw/
+                BulkCarrier/
+                    ...
+                Dredger/
+                    ...
+                Fishing/
+                    ...
+                Tanker/
+                    ...
+            sample/
+                ...
+        soc/
+            ...
+    <other repository>/
+        ...
+    ...
+```
+
+To train, run
+```python src/train.py --config_name=config/AConvNet-FUSAR.json```.
+
+*evaluate_fusar.py* does part of what is to be done in *notebook/experiments-SOC.ipynb*. For the ease of use, run
+```python src/evaluate_fusar.py```.
+
+An inference script is also created for the trained model. To infer on an image, edit the sample image path in the script and run
+```python src/inference_fusar.py```.
+
 # AConvNet
 
 ### Target Classification Using the Deep Convolutional Networks for SAR Images
 
 This repository is reproduced-implementation of AConvNet which recognize target from MSTAR dataset.
 You can see the official implementation of the author at [MSTAR-AConvNet](https://github.com/fudanxu/MSTAR-AConvNet). For the PyTorch version, refer to [AConvNet-pytorch](https://github.com/jangsoopark/AConvNet-pytorch).
-
-## Dataset
-
-This repository uses AConvNet on [FUSAR-Ship Dataset version 1.0](https://emwlab.fudan.edu.cn/resources/) dataset. For MSTAR dataset usage, refer to the original repository [here](https://github.com/jangsoopark/AConvNet-pytorch).
 
 ### MSTAR (Moving and Stationary Target Acquisition and Recognition) Database
 
