@@ -40,7 +40,17 @@ AConvNet-FUSAR/
     ...
 ```
 
-To train, run
+To train, 
+- Perform data augmentation first by running
+```python src/data/fusar_data_augmentation.py```
+
+- Generate .npy data for training
+```
+python generate_dataset.py --is_train=True --chip_size=100 --patch_size=94 
+python generate_dataset.py --is_train=False --chip_size=128 --patch_size=128
+```
+
+- Start the training
 ```python src/train.py --config_name=config/AConvNet-FUSAR.json```.
 
 *evaluate_fusar.py* does part of what is to be done in *notebook/experiments-SOC.ipynb*. For the ease of use, run
