@@ -4,9 +4,9 @@
 
 This repository uses AConvNet on [FUSAR-Ship Dataset version 1.0](https://emwlab.fudan.edu.cn/resources/) dataset. For MSTAR dataset usage, refer to the original repository [here](https://github.com/jangsoopark/AConvNet-pytorch).
 
-Due to the difficulty of the FUSAR dataset, only 4 classes are being used in the training, namely 'BulkCarrier', 'Dredger', 'Fishing', and 'Tanker'. Thus, rearranging the dataset from the initial source provided above is necessary.
+Due to the difficulty of the FUSAR dataset, only 4 classes are being used in the training, namely 'BulkCarrier', 'Dredger', 'Fishing', and 'Tanker'. Thus, rearranging the dataset from the initial source provided above is necessary. The rearranged dataset can be downloaded [here](https://drive.google.com/file/d/1wUKG9QTBS1tZuRxcfkpVt8UJaQcBNubG/view?usp=sharing).
 
-The FUSAR dataset should be rearranged and placed in:
+The rearranged FUSAR dataset should be placed in:
 
 ```
 AConvNet-FUSAR/
